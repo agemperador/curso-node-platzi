@@ -18,20 +18,20 @@ const options = {
 app.use(cors(options))
 app.use(express.json())
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json')
+const swaggerDocument = require('../swagger.json')
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('api/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
-app.get('/',(req,res)=>{
+app.get('api/',(req,res)=>{
     res.send("Server online")
 })
 
-app.get('/nueva-ruta',(req,res)=>{
+app.get('api/nueva-ruta',(req,res)=>{
     res.send("Hola, soy una nueva ruta");
 })
 
