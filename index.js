@@ -1,6 +1,31 @@
 const express = require("express");
+const cors  = require("cors");
+const routerApi = require("./routes");
+const { logErrorsMiddleware, errorHandlerMiddleware, boomErrorHandlerMiddleware } = require("./middlewares/error.handler");
+
+
 const app = express();
+const whiteList = ['http://localhost:8080'] //'otros dominios'
+const options = {
+    origin: (origin, callback) => {
+        if (whiteList.includes(origin)) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
+app.use(cors(options))
+app.use(express.json())
+
 const port = 3000;
+
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json')
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 app.get('/',(req,res)=>{
     res.send("Server online")
@@ -10,38 +35,11 @@ app.get('/nueva-ruta',(req,res)=>{
     res.send("Hola, soy una nueva ruta");
 })
 
-app.get('/products',(req, res)=>{
-    res.json([
-    {
-        name:'Product 1',
-        price:1000
-    },
-    {
-        name:'Product 2',
-        price:2000
-    }
-])
-})
+routerApi(app)
 
-app.get('/product/:id',(req,res)=>{
-    const {id} = req.params;
-    res.json({
-        id,
-        name:`Product 2`,
-        price:1000
-    })
-})
-
-app.get('/categories/:categoryId/products/:productId', (req, res)=>{
-    const {categoryId, productId} = req.params;
-    res.json([
-    {
-        categoryId,
-        productId,
-        name:'Category 1',
-        products:[]
-    }
-    ])})
+app.use(logErrorsMiddleware);
+app.use(boomErrorHandlerMiddleware);
+app.use(errorHandlerMiddleware)
 
 app.listen(port, ()=>{
     console.log(`Puerto ${port}`);
