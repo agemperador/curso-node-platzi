@@ -5,7 +5,7 @@ const { logErrorsMiddleware, errorHandlerMiddleware, boomErrorHandlerMiddleware 
 
 
 const app = express();
-const whiteList = ['http://localhost:8080'] //'otros dominios'
+const whiteList = ['http://localhost:8080',"https://curso-node-platzi-hkklui584-agemperador.vercel.app"] //'otros dominios'
 const options = {
     origin: (origin, callback) => {
         if (whiteList.includes(origin)) {
